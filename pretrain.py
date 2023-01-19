@@ -113,3 +113,11 @@ if __name__ == '__main__':
 
     if args.type is None:
         raise ValueError("No autoencoder architecture type specified. Use option --type")
+    if args.type == "fc":
+        from configs import FCConfig
+        from src.model.FullyConnectedAE import FCAutoencoder
+
+        model_constructor = FCAutoencoder
+
+    model, optimizer, criterion, scheduler = init(FCConfig, model_constructor)
+
