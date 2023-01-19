@@ -131,7 +131,7 @@ if __name__ == '__main__':
     args = args.parse_args()
 
     model_constructor = None
-    train_config = None
+    cfg = None
     collator = None
 
     if args.type is None:
@@ -141,13 +141,14 @@ if __name__ == '__main__':
         from src.model.FullyConnectedAE import FCAutoencoder
 
         model_constructor = FCAutoencoder
+        cfg = FCConfig
 
-    model, optimizer, criterion, scheduler = init(FCConfig, model_constructor)
+    model, optimizer, criterion, scheduler = init(cfg, model_constructor)
 
     train_dataset = get_train_dataset(args.download)
     val_dataset = get_val_dataset(args.download)
 
-    train_dataloader = DataLoader(train_dataset, train_config.train_batch_size, shuffle=True,
+    train_dataloader = DataLoader(train_dataset, cfg.train_config.train_batch_size, shuffle=True,
                                   num_workers=args.num_workers, collate_fn=collator, pin_memory=True, drop_last=True)
-    val_dataloader = DataLoader(val_dataset, train_config.eval_batch_size, shuffle=False,
+    val_dataloader = DataLoader(val_dataset, cfg.train_config.eval_batch_size, shuffle=False,
                                 num_workers=args.num_workers, collate_fn=collator, pin_memory=True)
