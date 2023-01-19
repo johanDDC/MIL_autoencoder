@@ -1,3 +1,4 @@
+import argparse
 import torch
 
 from tqdm import tqdm
@@ -62,9 +63,9 @@ def train(model: Autoencoder, optimizer, criterion, scheduler, train_loader,
 
 
 if __name__ == '__main__':
-    pass
+    args = argparse.ArgumentParser()
+    args.add_argument("-t", "--type", default=None, type=str, help="autoencoder architecture type")
+    args = args.parse_args()
 
-
-
-
-
+    if args.type is None:
+        raise ValueError("No autoencoder architecture type specified. Use option --type")
