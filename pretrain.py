@@ -124,6 +124,7 @@ def init(cfg: Config, model_constructor: Callable[..., Autoencoder]):
 if __name__ == '__main__':
     args = argparse.ArgumentParser()
     args.add_argument("-t", "--type", default=None, type=str, help="autoencoder architecture type")
+    args.add_argument("-d", "--download", default=False, type=bool, help="download dataset")
     args = args.parse_args()
 
     model_constructor = None
