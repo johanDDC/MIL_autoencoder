@@ -1,4 +1,6 @@
-from configs.base_config import *
+import torch.nn as nn
+
+from configs.base_config import OptimizerConfig, TrainConfig, ModelConfig, Config
 
 
 class FCTrainConfig(TrainConfig):
@@ -6,7 +8,6 @@ class FCTrainConfig(TrainConfig):
     eval_batch_size = 128
 
     num_epoches = 100
-    learning_rate = 1e-4
 
     checkpoint_path = "checkpoints/fc"
 
@@ -20,4 +21,11 @@ class FCModelConfig(ModelConfig):
     negative_slope = .2
 
 
-FCConfig = Config(FCTrainConfig(), FCModelConfig())
+FCConfig = Config(
+    FCTrainConfig(
+        optimizer_config=OptimizerConfig("Adam", 1e-4),
+        scheduler_config=None,
+        loss=nn.MSELoss
+    ),
+    FCModelConfig()
+)
