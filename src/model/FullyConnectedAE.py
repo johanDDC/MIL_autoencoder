@@ -34,6 +34,7 @@ class FCDecoder(Decoder):
     def forward(self, x, *args):
         return self.decoder(x)
 
+
 class FCAutoencoder(Autoencoder):
     """
         Simple fully-connected autoencoder architecture
