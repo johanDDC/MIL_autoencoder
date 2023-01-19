@@ -1,5 +1,6 @@
 import argparse
 import inspect
+import os
 
 import torch
 
@@ -53,15 +54,29 @@ def evaluate(model: Autoencoder, dataloader, criterion, device="cuda"):
 
 
 def train(model: Autoencoder, optimizer, criterion, scheduler, train_loader,
-          val_loader, device="cuda", num_epoches=10):
+          val_loader, checkpoint_path, device="cuda", num_epoches=10):
     train_losses = torch.empty(num_epoches, device=device)
     val_losses = torch.empty(num_epoches, device=device)
+    best_loss_value = None
+    os.makedirs(checkpoint_path, exist_ok=True)
     for epoch in range(1, num_epoches + 1):
         epoch_train_losses = train_one_epoch(model, train_loader, optimizer, criterion, device, scheduler)
         epoch_val_losses = evaluate(model, val_loader, criterion, device)
 
         train_losses[epoch - 1] = torch.mean(epoch_train_losses)
         val_losses[epoch - 1] = torch.mean(epoch_val_losses)
+
+        if val_losses[epoch - 1] < best_loss_value:
+            best_loss_value = val_losses[epoch - 1]
+            torch.save(
+                {"model": model.state_dict()},
+                os.path.join(checkpoint_path, f"epoch_{epoch}.pth")
+            )
+
+    torch.save(
+        {"model": model.state_dict()},
+        os.path.join(checkpoint_path, f"final.pth")
+    )
 
     return train_losses, val_losses
 
