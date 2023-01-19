@@ -127,7 +127,7 @@ if __name__ == '__main__':
     args = argparse.ArgumentParser()
     args.add_argument("-t", "--type", default=None, type=str, help="autoencoder architecture type")
     args.add_argument("-d", "--download", default=False, type=bool, help="download dataset")
-    args.add_argument("-nw", "--num_workers", default=1, type=bool, help="num workers for dataloader")
+    args.add_argument("-nw", "--num_workers", default=1, type=int, help="num workers for dataloader")
     args = args.parse_args()
 
     model_constructor = None
