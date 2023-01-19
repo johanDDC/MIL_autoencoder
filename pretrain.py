@@ -77,7 +77,7 @@ def init(cfg: Config, model_constructor: Callable[..., Autoencoder]):
         return constructor(**entity_params)
 
     train_cfg, model_cfg = cfg.train_config, cfg.model_config
-    optim_cfg = train_cfg.optimizer_config
+    optim_cfg, scheduler_cfg = train_cfg.optimizer_config, train_cfg.scheduler_config
 
     model = construct_entity(model_constructor, model_cfg)
 
@@ -92,7 +92,16 @@ def init(cfg: Config, model_constructor: Callable[..., Autoencoder]):
     optimizer = construct_entity(optimizer_constructor, optim_cfg)
     criterion = train_cfg.loss()
 
-    return model, optimizer, criterion
+    if scheduler_cfg is not None:
+        if scheduler_cfg.name == "ExponentialLR":
+            scheduler_constructor = torch.optim.lr_scheduler.ExponentialLR
+        else:
+            raise NotImplementedError("This type of scheduler is not supported")
+        scheduler = construct_entity(scheduler_constructor, scheduler_cfg)
+    else:
+        scheduler = None
+
+    return model, optimizer, criterion, scheduler
 
 
 if __name__ == '__main__':
