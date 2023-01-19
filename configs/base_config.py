@@ -1,15 +1,25 @@
+import torch
+
 from dataclasses import dataclass
+from typing import Union
+
+
+@dataclass()
+class SchedulerConfig:
+    name: str
 
 
 @dataclass()
 class OptimizerConfig:
-    optimizer_name: str
+    name: str
     lr: float
 
 
 @dataclass()
 class TrainConfig:
     optimizer_config: OptimizerConfig
+    scheduler_config: Union[None, SchedulerConfig]
+    loss: torch.nn.Module
 
 
 @dataclass()
