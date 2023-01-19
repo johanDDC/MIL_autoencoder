@@ -68,7 +68,7 @@ def train(model: Autoencoder, optimizer, criterion, scheduler, train_loader,
 
 def init(cfg: Config, model_constructor: Callable[..., Autoencoder]):
     def construct_entity(constructor, config):
-        constructor_params = inspect.getfullargspec(constructor)[1]
+        constructor_params = inspect.getfullargspec(constructor).args
         entity_params = dict()
         for param in constructor_params:
             if param in config.__dict__.keys():
