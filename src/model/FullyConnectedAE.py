@@ -13,7 +13,7 @@ class FCEncoder(Encoder):
                            nn.LeakyReLU(negative_slope, inplace=True)])
             current_dim //= downscale_factor
 
-        self.encoder = nn.Sequential(nn.Flatten(), *layers)
+        self.encoder = nn.Sequential(*layers)
 
     def forward(self, x):
         return self.encoder(x)
