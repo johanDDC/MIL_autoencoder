@@ -139,3 +139,8 @@ if __name__ == '__main__':
 
     train_dataset = get_train_dataset(args.download)
     val_dataset = get_val_dataset(args.download)
+
+    train_dataloader = DataLoader(train_dataset, train_config.train_batch_size, shuffle=True,
+                                  num_workers=args.num_workers, collate_fn=collator, pin_memory=True, drop_last=True)
+    val_dataloader = DataLoader(val_dataset, train_config.eval_batch_size, shuffle=False,
+                                num_workers=args.num_workers, collate_fn=collator, pin_memory=True)
