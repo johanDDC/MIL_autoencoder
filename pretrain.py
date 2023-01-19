@@ -9,6 +9,7 @@ from tqdm import tqdm
 from typing import Union, Callable
 
 from configs import Config
+from src.data.collators import fc_collator
 from src.data.dataset import get_train_dataset, get_val_dataset
 from src.model.base_model import Autoencoder
 
@@ -142,6 +143,7 @@ if __name__ == '__main__':
 
         model_constructor = FCAutoencoder
         cfg = FCConfig
+        collator = fc_collator
 
     model, optimizer, criterion, scheduler = init(cfg, model_constructor)
     device = "cuda" if torch.cuda.is_available() else "cpu"
