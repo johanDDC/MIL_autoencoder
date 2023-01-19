@@ -67,21 +67,39 @@ def train(model: Autoencoder, optimizer, criterion, scheduler, train_loader,
 
 
 def init(cfg: Config, model_constructor: Callable[..., Autoencoder]):
-    train_cfg, model_cfg = cfg.train_config, cfg.model_config
+    def construct_entity(constructor, config):
+        constructor_params = inspect.getfullargspec(constructor)[1]
+        entity_params = dict()
+        for param in constructor_params:
+            # TODO check if parameter in config
+            entity_params[param] = getattr(config, param, None)
 
-    model_constructor_params = inspect.getfullargspec(model_constructor)[1]
-    model_params = dict()
-    for param in model_constructor_params:
-        model_params[param] = getattr(model_constructor, param, None)
-    model = model_constructor(**model_params)
-    
-    return model    
+        return constructor(**entity_params)
+
+    train_cfg, model_cfg = cfg.train_config, cfg.model_config
+    optim_cfg = train_cfg.optimizer_config
+
+    model = construct_entity(model_constructor, model_cfg)
+
+    if optim_cfg.optimizer_name == "Adam":
+        optimizer_constructor = torch.optim.Adam
+    elif optim_cfg.optimizer_name == "AdamW":
+        optimizer_constructor = torch.optim.AdamW
+    elif optim_cfg.optimizer_name == "SGD":
+        optimizer_constructor = torch.optim.SGD
+    else:
+        raise NotImplementedError("This type of optimizer is not supported")
+    optimizer = construct_entity(optimizer_constructor, optim_cfg)
+
+    return model, optimizer
 
 
 if __name__ == '__main__':
     args = argparse.ArgumentParser()
     args.add_argument("-t", "--type", default=None, type=str, help="autoencoder architecture type")
     args = args.parse_args()
+
+    model_constructor = None
 
     if args.type is None:
         raise ValueError("No autoencoder architecture type specified. Use option --type")
