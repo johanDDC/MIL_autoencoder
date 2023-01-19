@@ -67,14 +67,14 @@ def train(model: Autoencoder, optimizer, criterion, scheduler, train_loader,
 
 
 def init(cfg: Config, model_constructor: Callable[..., Autoencoder]):
-    def construct_entity(constructor, config):
+    def construct_entity(constructor, config, **kwargs):
         constructor_params = inspect.getfullargspec(constructor).args
         entity_params = dict()
         for param in constructor_params:
             if param != "self" and param in config.__dir__():
                 entity_params[param] = getattr(config, param, None)
 
-        return constructor(**entity_params)
+        return constructor(**entity_params, **kwargs)
 
     train_cfg, model_cfg = cfg.train_config, cfg.model_config
     optim_cfg, scheduler_cfg = train_cfg.optimizer_config, train_cfg.scheduler_config
@@ -91,7 +91,7 @@ def init(cfg: Config, model_constructor: Callable[..., Autoencoder]):
         optimizer_constructor = torch.optim.SGD
     else:
         raise NotImplementedError("This type of optimizer is not supported")
-    optimizer = construct_entity(optimizer_constructor, optim_cfg)
+    optimizer = construct_entity(optimizer_constructor, optim_cfg, params=model.parameters())
     criterion = train_cfg.loss()
 
     if scheduler_cfg is not None:
@@ -99,7 +99,7 @@ def init(cfg: Config, model_constructor: Callable[..., Autoencoder]):
             scheduler_constructor = torch.optim.lr_scheduler.ExponentialLR
         else:
             raise NotImplementedError("This type of scheduler is not supported")
-        scheduler = construct_entity(scheduler_constructor, scheduler_cfg)
+        scheduler = construct_entity(scheduler_constructor, scheduler_cfg, optimizer=optimizer)
     else:
         scheduler = None
 
