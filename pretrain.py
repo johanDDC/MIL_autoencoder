@@ -8,6 +8,7 @@ from tqdm import tqdm
 from typing import Union, Callable
 
 from configs import Config
+from src.data.dataset import get_train_dataset, get_val_dataset
 from src.model.base_model import Autoencoder
 
 
@@ -131,3 +132,6 @@ if __name__ == '__main__':
 
     if args.type is None:
         raise ValueError("No autoencoder architecture type specified. Use option --type")
+
+    train_dataset = get_train_dataset(args.download)
+    val_dataset = get_val_dataset(args.download)
