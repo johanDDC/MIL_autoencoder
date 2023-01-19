@@ -1,8 +1,12 @@
 import argparse
+import inspect
+
 import torch
 
 from tqdm import tqdm
+from typing import Union, Callable
 
+from configs import Config
 from src.model.base_model import Autoencoder
 
 
@@ -60,6 +64,18 @@ def train(model: Autoencoder, optimizer, criterion, scheduler, train_loader,
         val_losses[epoch - 1] = torch.mean(epoch_val_losses)
 
     return train_losses, val_losses
+
+
+def init(cfg: Config, model_constructor: Callable[..., Autoencoder]):
+    train_cfg, model_cfg = cfg.train_config, cfg.model_config
+
+    model_constructor_params = inspect.getfullargspec(model_constructor)[1]
+    model_params = dict()
+    for param in model_constructor_params:
+        model_params[param] = getattr(model_constructor, param, None)
+    model = model_constructor(**model_params)
+    
+    return model    
 
 
 if __name__ == '__main__':
