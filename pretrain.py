@@ -90,8 +90,9 @@ def init(cfg: Config, model_constructor: Callable[..., Autoencoder]):
     else:
         raise NotImplementedError("This type of optimizer is not supported")
     optimizer = construct_entity(optimizer_constructor, optim_cfg)
+    criterion = train_cfg.loss()
 
-    return model, optimizer
+    return model, optimizer, criterion
 
 
 if __name__ == '__main__':
