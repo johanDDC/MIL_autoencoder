@@ -81,11 +81,11 @@ def init(cfg: Config, model_constructor: Callable[..., Autoencoder]):
 
     model = construct_entity(model_constructor, model_cfg)
 
-    if optim_cfg.optimizer_name == "Adam":
+    if optim_cfg.name == "Adam":
         optimizer_constructor = torch.optim.Adam
-    elif optim_cfg.optimizer_name == "AdamW":
+    elif optim_cfg.name == "AdamW":
         optimizer_constructor = torch.optim.AdamW
-    elif optim_cfg.optimizer_name == "SGD":
+    elif optim_cfg.name == "SGD":
         optimizer_constructor = torch.optim.SGD
     else:
         raise NotImplementedError("This type of optimizer is not supported")
