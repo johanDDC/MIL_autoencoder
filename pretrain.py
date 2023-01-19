@@ -144,6 +144,7 @@ if __name__ == '__main__':
         cfg = FCConfig
 
     model, optimizer, criterion, scheduler = init(cfg, model_constructor)
+    device = "cuda" if torch.cuda.is_available() else "cpu"
 
     train_dataset = get_train_dataset(args.download)
     val_dataset = get_val_dataset(args.download)
@@ -152,3 +153,7 @@ if __name__ == '__main__':
                                   num_workers=args.num_workers, collate_fn=collator, pin_memory=True, drop_last=True)
     val_dataloader = DataLoader(val_dataset, cfg.train_config.eval_batch_size, shuffle=False,
                                 num_workers=args.num_workers, collate_fn=collator, pin_memory=True)
+
+    train_losses, val_losses = train(model, optimizer, criterion, scheduler,
+                                     train_dataloader, val_dataloader, cfg.train_config.checkpoint_path,
+                                     device=device, num_epoches=cfg.train_config.num_epoches)
