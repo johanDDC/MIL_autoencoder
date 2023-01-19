@@ -71,7 +71,7 @@ def init(cfg: Config, model_constructor: Callable[..., Autoencoder]):
         constructor_params = inspect.getfullargspec(constructor).args
         entity_params = dict()
         for param in constructor_params:
-            if param in config.__dict__.keys():
+            if param != "self" and param in config.__dir__():
                 entity_params[param] = getattr(config, param, None)
 
         return constructor(**entity_params)
