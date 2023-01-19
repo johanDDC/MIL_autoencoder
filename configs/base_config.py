@@ -24,7 +24,8 @@ class TrainConfig:
 
 @dataclass()
 class ModelConfig:
-    pass
+    use_pretrained: bool
+    pretrained_path: Union[None, str]
 
 
 @dataclass()

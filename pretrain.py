@@ -68,7 +68,7 @@ def train(model: Autoencoder, optimizer, criterion, scheduler, train_loader,
 
 def init(cfg: Config, model_constructor: Callable[..., Autoencoder]):
     def construct_entity(constructor, config):
-        constructor_params = inspect.getfullargspec(constructor)[1]
+        constructor_params = inspect.getfullargspec(constructor).args
         entity_params = dict()
         for param in constructor_params:
             if param in config.__dict__.keys():
@@ -80,6 +80,8 @@ def init(cfg: Config, model_constructor: Callable[..., Autoencoder]):
     optim_cfg, scheduler_cfg = train_cfg.optimizer_config, train_cfg.scheduler_config
 
     model = construct_entity(model_constructor, model_cfg)
+    if model_cfg.use_pretrained:
+        model.load_state_dict(torch.load(model_cfg.pretrained_path)["model"])
 
     if optim_cfg.name == "Adam":
         optimizer_constructor = torch.optim.Adam
