@@ -3,11 +3,13 @@ import inspect
 import os
 
 import torch
+from torch.utils.data import DataLoader
 
 from tqdm import tqdm
 from typing import Union, Callable
 
 from configs import Config
+from src.data.dataset import get_train_dataset, get_val_dataset
 from src.model.base_model import Autoencoder
 
 
@@ -124,9 +126,21 @@ def init(cfg: Config, model_constructor: Callable[..., Autoencoder]):
 if __name__ == '__main__':
     args = argparse.ArgumentParser()
     args.add_argument("-t", "--type", default=None, type=str, help="autoencoder architecture type")
+    args.add_argument("-d", "--download", default=False, type=bool, help="download dataset")
+    args.add_argument("-nw", "--num_workers", default=1, type=bool, help="num workers for dataloader")
     args = args.parse_args()
 
     model_constructor = None
+    train_config = None
+    collator = None
 
     if args.type is None:
         raise ValueError("No autoencoder architecture type specified. Use option --type")
+
+    train_dataset = get_train_dataset(args.download)
+    val_dataset = get_val_dataset(args.download)
+
+    train_dataloader = DataLoader(train_dataset, train_config.train_batch_size, shuffle=True,
+                                  num_workers=args.num_workers, collate_fn=collator, pin_memory=True, drop_last=True)
+    val_dataloader = DataLoader(val_dataset, train_config.eval_batch_size, shuffle=False,
+                                num_workers=args.num_workers, collate_fn=collator, pin_memory=True)

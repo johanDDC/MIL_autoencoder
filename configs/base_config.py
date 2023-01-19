@@ -17,6 +17,12 @@ class OptimizerConfig:
 
 @dataclass()
 class TrainConfig:
+    train_batch_size = 16
+    eval_batch_size = 16
+    num_epoches = 10
+
+    checkpoint_path = "checkpoints"
+
     optimizer_config: OptimizerConfig
     scheduler_config: Union[None, SchedulerConfig]
     loss: torch.nn.Module
