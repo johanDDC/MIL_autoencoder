@@ -2,8 +2,14 @@ from dataclasses import dataclass
 
 
 @dataclass()
+class OptimizerConfig:
+    optimizer_name: str
+    lr: float
+
+
+@dataclass()
 class TrainConfig:
-    pass
+    optimizer_config: OptimizerConfig
 
 
 @dataclass()
