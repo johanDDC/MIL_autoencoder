@@ -13,9 +13,6 @@ class FCTrainConfig(TrainConfig):
 
 
 class FCModelConfig(ModelConfig):
-    use_pretrained = False
-    pretrained_path = None
-
     n_layers = 3
     scale_factor = 2
     negative_slope = .2
