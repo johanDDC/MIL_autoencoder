@@ -16,7 +16,7 @@ from src.model.base_model import Autoencoder
 
 def train_one_epoch(model: Autoencoder, train_dataloader, optimizer, criterion, device="cuda", scheduler=None):
     len_dataloader = len(train_dataloader)
-    losses = torch.empty(len_dataloader, device=device)
+    losses = torch.zeros(len_dataloader, device=device)
     model.train()
     with tqdm(total=len_dataloader) as prbar:
         for batch_idx, (features, _) in enumerate(train_dataloader):
@@ -33,7 +33,7 @@ def train_one_epoch(model: Autoencoder, train_dataloader, optimizer, criterion, 
             if scheduler:
                 scheduler.step()
 
-            prbar.set_description(f"epoch loss: {torch.mean(losses)}")
+            prbar.set_description(f"epoch loss: {torch.sum(losses) / (batch_idx + 1)}")
             prbar.update(1)
 
     return losses
@@ -42,7 +42,7 @@ def train_one_epoch(model: Autoencoder, train_dataloader, optimizer, criterion, 
 @torch.inference_mode()
 def evaluate(model: Autoencoder, dataloader, criterion, device="cuda"):
     len_dataloader = len(dataloader)
-    losses = torch.empty(len_dataloader, device=device)
+    losses = torch.zeros(len_dataloader, device=device)
     model.eval()
     with tqdm(total=len_dataloader) as prbar:
         for batch_idx, (features, _) in enumerate(dataloader):
@@ -50,7 +50,7 @@ def evaluate(model: Autoencoder, dataloader, criterion, device="cuda"):
             restored = model(features)
             loss = criterion(restored, features)
             losses[batch_idx] = loss.detach()
-            prbar.set_description(f"epoch loss: {torch.mean(losses)}")
+            prbar.set_description(f"epoch loss: {torch.sum(losses) / (batch_idx + 1)}")
             prbar.update(1)
 
     return losses
@@ -60,7 +60,7 @@ def train(model: Autoencoder, optimizer, criterion, scheduler, train_loader,
           val_loader, checkpoint_path, device="cuda", num_epoches=10):
     train_losses = torch.empty(num_epoches, device=device)
     val_losses = torch.empty(num_epoches, device=device)
-    best_loss_value = None
+    best_loss_value = torch.inf
     os.makedirs(checkpoint_path, exist_ok=True)
     for epoch in range(1, num_epoches + 1):
         epoch_train_losses = train_one_epoch(model, train_loader, optimizer, criterion, device, scheduler)
