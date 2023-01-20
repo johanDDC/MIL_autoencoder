@@ -14,7 +14,8 @@ from src.data.dataset import get_train_dataset, get_val_dataset
 from src.model.base_model import Autoencoder
 
 
-def train_one_epoch(model: Autoencoder, train_dataloader, optimizer, criterion, device="cuda", scheduler=None):
+def train_one_epoch(model: Autoencoder, train_dataloader, optimizer, criterion, device="cuda", scheduler=None,
+                    scheduler_frequency=None):
     len_dataloader = len(train_dataloader)
     losses = torch.zeros(len_dataloader, device=device)
     model.train()
@@ -30,7 +31,7 @@ def train_one_epoch(model: Autoencoder, train_dataloader, optimizer, criterion, 
             optimizer.zero_grad()
             losses[batch_idx] = loss.detach()
 
-            if scheduler:
+            if scheduler is not None and scheduler_frequency=="step":
                 scheduler.step()
 
             prbar.set_description(f"epoch loss: {torch.sum(losses) / (batch_idx + 1)}")
@@ -57,7 +58,7 @@ def evaluate(model: Autoencoder, dataloader, criterion, device="cuda"):
 
 
 def train(model: Autoencoder, optimizer, criterion, scheduler, train_loader,
-          val_loader, checkpoint_path, device="cuda", num_epoches=10):
+          val_loader, checkpoint_path, device="cuda", num_epoches=10, scheduler_frequency=None):
     train_losses = torch.empty(num_epoches, device=device)
     val_losses = torch.empty(num_epoches, device=device)
     best_loss_value = torch.inf
@@ -75,6 +76,9 @@ def train(model: Autoencoder, optimizer, criterion, scheduler, train_loader,
                 {"model": model.state_dict()},
                 os.path.join(checkpoint_path, f"epoch_{epoch}.pth")
             )
+
+        if scheduler is not None and scheduler_frequency == "epoch":
+            scheduler.step()
 
     torch.save(
         {"model": model.state_dict()},
@@ -154,8 +158,8 @@ if __name__ == '__main__':
     model, optimizer, criterion, scheduler = init(cfg, model_constructor)
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    train_dataset = get_train_dataset(args.download)
-    val_dataset = get_val_dataset(args.download)
+    train_dataset = get_train_dataset(download=args.download)
+    val_dataset = get_val_dataset(download=args.download)
 
     train_dataloader = DataLoader(train_dataset, cfg.train_config.train_batch_size, shuffle=True,
                                   num_workers=args.num_workers, collate_fn=collator, pin_memory=True, drop_last=True)
@@ -164,6 +168,7 @@ if __name__ == '__main__':
 
     train_losses, val_losses = train(model, optimizer, criterion, scheduler,
                                      train_dataloader, val_dataloader, cfg.train_config.checkpoint_path,
-                                     device=device, num_epoches=cfg.train_config.num_epoches)
+                                     device=device, num_epoches=cfg.train_config.num_epoches,
+                                     scheduler_frequency=cfg.train_config.scheduler_config.frequency)
     print("Final mean train loss:", train_losses.mean())
     print("Final mean val loss:", val_losses.mean())

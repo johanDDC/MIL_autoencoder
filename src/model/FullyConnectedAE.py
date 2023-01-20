@@ -29,7 +29,7 @@ class FCDecoder(Decoder):
                            nn.Linear(current_dim // upscale_factor, current_dim)])
             current_dim //= upscale_factor
 
-        self.decoder = nn.Sequential(*layers[::-1])
+        self.decoder = nn.Sequential(*layers[::-1], nn.Tanh())
 
     def forward(self, x, *args):
         return self.decoder(x)
