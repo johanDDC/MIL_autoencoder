@@ -14,7 +14,8 @@ from src.data.dataset import get_train_dataset, get_val_dataset
 from src.model.base_model import Autoencoder
 
 
-def train_one_epoch(model: Autoencoder, train_dataloader, optimizer, criterion, device="cuda", scheduler=None):
+def train_one_epoch(model: Autoencoder, train_dataloader, optimizer, criterion, device="cuda", scheduler=None,
+                    scheduler_frequency=None):
     len_dataloader = len(train_dataloader)
     losses = torch.zeros(len_dataloader, device=device)
     model.train()
@@ -30,7 +31,7 @@ def train_one_epoch(model: Autoencoder, train_dataloader, optimizer, criterion, 
             optimizer.zero_grad()
             losses[batch_idx] = loss.detach()
 
-            if scheduler is not None:
+            if scheduler is not None and scheduler_frequency=="step":
                 scheduler.step()
 
             prbar.set_description(f"epoch loss: {torch.sum(losses) / (batch_idx + 1)}")
