@@ -31,23 +31,23 @@ class CNNEncoder(Encoder):
 
 
 class CNNDecoder(Decoder):
-    def __init__(self, n_layers, downscale_factor, out_channels, **kwargs):
+    def __init__(self, n_layers, downscale_factor, out_channels, inner_channels, **kwargs):
         super().__init__()
         kernel_sz = kwargs.get("kernel_size", 4)
         stride = kwargs.get("stride", 2)
         pad = kwargs.get("padding", 1)
 
         layers = nn.ModuleList()
-        current_dim = out_channels * downscale_factor
+        current_dim = inner_channels
         for _ in range(n_layers - 1):
-            layers.extend([nn.LayerNorm(current_dim * downscale_factor),
+            layers.extend([nn.ConvTranspose2d(current_dim, current_dim // downscale_factor,
+                                     kernel_size=kernel_sz, stride=stride, padding=pad),
                            nn.ReLU(inplace=True),
-                           nn.ConvTranspose2d(current_dim * downscale_factor, current_dim,
-                                     kernel_size=kernel_sz, stride=stride, padding=pad)])
-            current_dim *= downscale_factor
+                           LayerNorm(current_dim // downscale_factor, data_format="channels_first")])
+            current_dim //= downscale_factor
 
-        self.decoder = nn.Sequential(*layers[::-1],
-                                     nn.Conv2d(current_dim, out_channels,
+        self.decoder = nn.Sequential(*layers,
+                                     nn.ConvTranspose2d(current_dim, out_channels,
                                                kernel_size=kernel_sz, stride=stride, padding=pad),
                                      nn.Tanh())
 
@@ -64,7 +64,8 @@ class CNNAutoencoder(Autoencoder):
                  start_num_filters, negative_slope=0.2, **kwargs):
         encoder = CNNEncoder(n_layers, scale_factor, in_channels,
                              start_num_filters, negative_slope, **kwargs)
-        decoder = CNNDecoder(n_layers, scale_factor, in_channels, **kwargs)
+        inner_channels = start_num_filters * scale_factor ** (n_layers - 1)
+        decoder = CNNDecoder(n_layers, scale_factor, in_channels, inner_channels, **kwargs)
         super().__init__(encoder, decoder)
         self.apply(self.__init_weights)
 
