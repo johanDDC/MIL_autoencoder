@@ -1,3 +1,4 @@
+import math
 import torch.nn as nn
 import torch.nn.init as init
 
@@ -24,7 +25,7 @@ class CNNEncoder(Encoder):
                            LayerNorm(current_dim * upscale_factor, data_format="channels_first")])
             current_dim *= upscale_factor
 
-        self.encoder = nn.Sequential(*layers)
+        self.encoder = nn.Sequential(*layers, nn.Flatten())
 
     def forward(self, x):
         return self.encoder(x)
@@ -36,6 +37,7 @@ class CNNDecoder(Decoder):
         kernel_sz = kwargs.get("kernel_size", 4)
         stride = kwargs.get("stride", 2)
         pad = kwargs.get("padding", 1)
+        self.inner_channels = inner_channels
 
         layers = nn.ModuleList()
         current_dim = inner_channels
@@ -52,6 +54,10 @@ class CNNDecoder(Decoder):
                                      nn.Tanh())
 
     def forward(self, x, *args):
+        x = x.reshape(x.shape[0], self.inner_channels, -1)
+        flat_sz = x.shape[2]
+        sz = int(math.sqrt(flat_sz))
+        x = x.reshape(*x.shape[:2], sz, sz)
         return self.decoder(x)
 
 
