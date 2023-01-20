@@ -167,6 +167,7 @@ if __name__ == '__main__':
 
     train_losses, val_losses = train(model, optimizer, criterion, scheduler,
                                      train_dataloader, val_dataloader, cfg.train_config.checkpoint_path,
-                                     device=device, num_epoches=cfg.train_config.num_epoches)
+                                     device=device, num_epoches=cfg.train_config.num_epoches,
+                                     scheduler_frequency=cfg.train_config.scheduler_config.frequency)
     print("Final mean train loss:", train_losses.mean())
     print("Final mean val loss:", val_losses.mean())
