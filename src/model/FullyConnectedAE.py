@@ -13,7 +13,7 @@ class FCEncoder(Encoder):
                            nn.LeakyReLU(negative_slope, inplace=True)])
             current_dim //= downscale_factor
 
-        self.encoder = nn.Sequential(nn.Flatten(), *layers)
+        self.encoder = nn.Sequential(*layers)
 
     def forward(self, x):
         return self.encoder(x)
@@ -26,13 +26,14 @@ class FCDecoder(Decoder):
         current_dim = self.output_dim
         for _ in range(n_layers):
             layers.extend([nn.ReLU(inplace=True),
-                           nn.Linear(current_dim, current_dim // upscale_factor)])
+                           nn.Linear(current_dim // upscale_factor, current_dim)])
             current_dim //= upscale_factor
 
         self.decoder = nn.Sequential(*layers[::-1])
 
     def forward(self, x, *args):
         return self.decoder(x)
+
 
 class FCAutoencoder(Autoencoder):
     """

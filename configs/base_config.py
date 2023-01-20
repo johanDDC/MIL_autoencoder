@@ -30,8 +30,8 @@ class TrainConfig:
 
 @dataclass()
 class ModelConfig:
-    use_pretrained: bool
-    pretrained_path: Union[None, str]
+    use_pretrained: bool = False
+    pretrained_path: Union[None, str] = None
 
 
 @dataclass()
