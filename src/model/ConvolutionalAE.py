@@ -71,5 +71,5 @@ class CNNAutoencoder(Autoencoder):
     @staticmethod
     def __init_weights(layer):
         if isinstance(layer, (nn.Conv2d, nn.ConvTranspose2d)):
-            init.xavier_normal(layer.weight)
+            init.xavier_normal_(layer.weight)
             init.constant_(layer.bias, 0)
