@@ -7,9 +7,9 @@ transforms = T.Compose([
 ])
 
 
-def get_train_dataset(download=False):
-    return torchvision.datasets.CIFAR100("data", train=True, download=download, transform=transforms)
+def get_train_dataset(dataset_path="data", download=False):
+    return torchvision.datasets.CIFAR100(dataset_path, train=True, download=download, transform=transforms)
 
 
-def get_val_dataset(download=False):
-    return torchvision.datasets.CIFAR100("data", train=False, download=download, transform=transforms)
+def get_val_dataset(dataset_path="data", download=False):
+    return torchvision.datasets.CIFAR100(dataset_path, train=False, download=download, transform=transforms)
