@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-from configs.base_config import OptimizerConfig, TrainConfig, ModelConfig, Config
+from configs.base_config import OptimizerConfig, TrainConfig, ModelConfig, Config, SchedulerConfig
 
 
 class FCTrainConfig(TrainConfig):
@@ -18,10 +18,14 @@ class FCModelConfig(ModelConfig):
     negative_slope = .2
 
 
+class FCExponentialLR(SchedulerConfig):
+    gamma = 0.9
+
+
 FCConfig = Config(
     FCTrainConfig(
         optimizer_config=OptimizerConfig("Adam", 1e-4),
-        scheduler_config=None,
+        scheduler_config=FCExponentialLR("ExponentialLR"),
         loss=nn.MSELoss
     ),
     FCModelConfig()
