@@ -2,6 +2,7 @@ import torch.nn as nn
 import torch.nn.init as init
 
 from src.model.base_model import Autoencoder, Encoder, Decoder
+from src.utils.utils import LayerNorm
 
 
 class CNNEncoder(Encoder):
@@ -16,11 +17,11 @@ class CNNEncoder(Encoder):
                                           kernel_size=kernel_sz, stride=stride, padding=pad),
                                 nn.LeakyReLU(negative_slope, inplace=True)])
         current_dim = start_num_filters
-        for _ in range(n_layers):
+        for _ in range(n_layers - 1):
             layers.extend([nn.Conv2d(current_dim, current_dim * upscale_factor,
                                      kernel_size=kernel_sz, stride=stride, padding=pad),
                            nn.LeakyReLU(negative_slope, inplace=True),
-                           nn.LayerNorm(current_dim * upscale_factor)])
+                           LayerNorm(current_dim * upscale_factor, data_format="channels_first")])
             current_dim *= upscale_factor
 
         self.encoder = nn.Sequential(*layers)
