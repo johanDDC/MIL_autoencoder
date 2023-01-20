@@ -144,6 +144,12 @@ if __name__ == '__main__':
         model_constructor = FCAutoencoder
         cfg = FCConfig
         collator = fc_collator
+    elif args.type == "conv":
+        from configs import CAEConfig
+        from src.model.ConvolutionalAE import CNNAutoencoder
+
+        model_constructor = CNNAutoencoder
+        cfg = CAEConfig
 
     model, optimizer, criterion, scheduler = init(cfg, model_constructor)
     device = "cuda" if torch.cuda.is_available() else "cpu"
