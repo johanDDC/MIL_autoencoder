@@ -25,7 +25,7 @@ class FCExponentialLR(SchedulerConfig):
 FCConfig = Config(
     FCTrainConfig(
         optimizer_config=OptimizerConfig("Adam", 1e-4),
-        scheduler_config=FCExponentialLR("ExponentialLR"),
+        scheduler_config=FCExponentialLR("ExponentialLR", "epoch"),
         loss=nn.MSELoss
     ),
     FCModelConfig()

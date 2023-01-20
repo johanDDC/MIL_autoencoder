@@ -30,7 +30,7 @@ def train_one_epoch(model: Autoencoder, train_dataloader, optimizer, criterion, 
             optimizer.zero_grad()
             losses[batch_idx] = loss.detach()
 
-            if scheduler:
+            if scheduler is not None:
                 scheduler.step()
 
             prbar.set_description(f"epoch loss: {torch.sum(losses) / (batch_idx + 1)}")
@@ -57,7 +57,7 @@ def evaluate(model: Autoencoder, dataloader, criterion, device="cuda"):
 
 
 def train(model: Autoencoder, optimizer, criterion, scheduler, train_loader,
-          val_loader, checkpoint_path, device="cuda", num_epoches=10):
+          val_loader, checkpoint_path, device="cuda", num_epoches=10, scheduler_frequency=None):
     train_losses = torch.empty(num_epoches, device=device)
     val_losses = torch.empty(num_epoches, device=device)
     best_loss_value = torch.inf
@@ -75,6 +75,9 @@ def train(model: Autoencoder, optimizer, criterion, scheduler, train_loader,
                 {"model": model.state_dict()},
                 os.path.join(checkpoint_path, f"epoch_{epoch}.pth")
             )
+
+        if scheduler is not None and scheduler_frequency == "epoch":
+            scheduler.step()
 
     torch.save(
         {"model": model.state_dict()},
