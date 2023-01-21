@@ -7,7 +7,7 @@ from typing import Union
 @dataclass()
 class SchedulerConfig:
     name: str
-    frequency: str
+    frequency: Union[None, str]
 
 
 @dataclass()
