@@ -121,6 +121,8 @@ def init(cfg: Config, model_constructor: Callable[..., Autoencoder]):
             scheduler_constructor = torch.optim.lr_scheduler.ExponentialLR
         elif scheduler_cfg.name == "CosineAnnealingLR":
             scheduler_constructor = torch.optim.lr_scheduler.CosineAnnealingLR
+        elif scheduler_cfg.name == "LambdaLR":
+            scheduler_constructor = torch.optim.lr_scheduler.LambdaLR
         else:
             raise NotImplementedError("This type of scheduler is not supported")
         scheduler = construct_entity(scheduler_constructor, scheduler_cfg, optimizer=optimizer)
@@ -157,9 +159,15 @@ if __name__ == '__main__':
 
         model_constructor = CNNAutoencoder
         cfg = CAEConfig
+    elif args.type == "mae":
+        from configs import MAEConfig
+        from src.model.mae.MAE import MAE
+
+        model_constructor = MAE
+        cfg = MAEConfig
 
     model, optimizer, criterion, scheduler = init(cfg, model_constructor)
-    # device = "cuda" if torch.cuda.is_available() else "cpu"
+    device = "cuda" if torch.cuda.is_available() else "cpu"
     model.to(device)
 
     train_dataset = get_train_dataset(download=args.download)

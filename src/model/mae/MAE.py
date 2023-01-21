@@ -11,5 +11,10 @@ class MAE(Autoencoder):
                  encoder_n_heads, decoder_n_layers, decoder_n_heads):
         encoder = MAEEncoder(img_size, patch_size, in_channels, inner_dim, hidden_dim, encoder_n_layers,
                              encoder_n_heads, patch_ratio)
-        decoder = MAEDecoder(img_size, patch_size, inner_dim, hidden_dim, decoder_n_layers, decoder_n_heads)
+        decoder = MAEDecoder(img_size, patch_size, in_channels, inner_dim, hidden_dim, decoder_n_layers, decoder_n_heads)
         super().__init__(encoder, decoder)
+
+    def forward(self, x):
+        enc, ids = self.encoder(x)
+        img = self.decoder(enc, ids)
+        return img

@@ -14,8 +14,7 @@ class PatchEmbeddings(nn.Module):
         self.pos_embeddings = nn.Embedding((img_size // patch_size) ** 2 + int(with_cls), emb_size)
 
     def forward(self, patches: Tensor):
-        patches = patches.reshape(patches.shape[0], patches.shape[1], -1)
-        positions = torch.arange(int(self.with_cls),
+        positions = torch.arange(0,
                                  (self.img_size // self.patch_size) ** 2 + int(self.with_cls), device=patches.device)
 
         return patches + self.pos_embeddings(positions)
