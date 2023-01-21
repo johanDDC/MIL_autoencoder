@@ -165,10 +165,12 @@ if __name__ == '__main__':
                                   num_workers=args.num_workers, collate_fn=collator, pin_memory=True, drop_last=True)
     val_dataloader = DataLoader(val_dataset, cfg.train_config.eval_batch_size, shuffle=False,
                                 num_workers=args.num_workers, collate_fn=collator, pin_memory=True)
+    if scheduler is not None:
+        scheduler_freq = cfg.train_config.scheduler_config.frequency
 
     train_losses, val_losses = train(model, optimizer, criterion, scheduler,
                                      train_dataloader, val_dataloader, cfg.train_config.checkpoint_path,
                                      device=device, num_epoches=cfg.train_config.num_epoches,
-                                     scheduler_frequency=cfg.train_config.scheduler_config.frequency)
+                                     scheduler_frequency=scheduler_freq)
     print("Final mean train loss:", train_losses.mean())
     print("Final mean val loss:", val_losses.mean())
