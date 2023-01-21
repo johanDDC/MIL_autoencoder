@@ -168,7 +168,6 @@ if __name__ == '__main__':
 
     model, optimizer, criterion, scheduler = init(cfg, model_constructor)
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    # device="cpu"
     model.to(device)
 
     train_dataset = get_train_dataset(download=args.download)
