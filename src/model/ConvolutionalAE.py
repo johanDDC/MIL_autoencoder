@@ -66,12 +66,12 @@ class CNNAutoencoder(Autoencoder):
         Simple cnn-based autoencoder architecture
     """
 
-    def __init__(self, n_layers, scale_factor, in_channels,
-                 start_num_filters, negative_slope=0.2, **kwargs):
-        encoder = CNNEncoder(n_layers, scale_factor, in_channels,
+    def __init__(self, encoder_n_layers, encoder_scale_factor, in_channels,
+                 start_num_filters, decoder_n_layers, decoder_scale_factor, negative_slope=0.2, **kwargs):
+        encoder = CNNEncoder(encoder_n_layers, encoder_scale_factor, in_channels,
                              start_num_filters, negative_slope, **kwargs)
-        inner_channels = start_num_filters * scale_factor ** (n_layers - 1)
-        decoder = CNNDecoder(n_layers, scale_factor, in_channels, inner_channels, **kwargs)
+        inner_channels = start_num_filters * encoder_scale_factor ** (encoder_n_layers - 1)
+        decoder = CNNDecoder(decoder_n_layers, decoder_scale_factor, in_channels, inner_channels, **kwargs)
         super().__init__(encoder, decoder)
         self.apply(self.__init_weights)
 
