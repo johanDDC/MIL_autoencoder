@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-from configs.base_config import OptimizerConfig, TrainConfig, ModelConfig, Config, SchedulerConfig
+from configs.base_config import OptimizerConfig, TrainConfig, ModelConfig, Config, SchedulerConfig, ClassifierConfig
 
 
 class CAETrainConfig(TrainConfig):
@@ -29,5 +29,6 @@ CAEConfig = Config(
         scheduler_config=CAECosineLR("CosineAnnealingLR", "step"),
         loss=nn.MSELoss
     ),
-    CAEModelConfig()
+    CAEModelConfig(),
+    ClassifierConfig(num_classes=100, num_epoches=10, input_dim=192, intermediate_dim=150)
 )
