@@ -5,7 +5,7 @@ This repository contains a test task to MIL about autoencoders. There ara severa
   * Simple convolutional based autoencoder
   * Masked autoencoder (a.k.a. MAE)
   
-This README clarifies the process of lauching my code and also contains some comments about implementation. All experiments may be found in [https://github.com/johanDDC/MIL_autoencoder/blob/master/notebooks/experiments.ipynb](notebook). Note, that notebook contains results of my experiment, and also may use libraries that which are not presented in requirements. This notebook is considered to be viewed, not launched.
+This README clarifies the process of lauching my code and also contains some comments about implementation. All experiments may be found in [notebook](https://github.com/johanDDC/MIL_autoencoder/blob/master/notebooks/experiments.ipynb). Note, that notebook contains results of my experiment, and also may use libraries that which are not presented in requirements. This notebook is considered to be viewed, not launched.
 
 ### Instalation
 
@@ -34,9 +34,12 @@ After pretraining stage you also may train classifier over encoder. For that pur
 
 There are also several commandline options:
 
-  *`--type` --- The type of architecture you use;
-  *`--download` --- whether you need to download dataset or not. Default is `False`;
-  *`--nuw_workers` --- scecify the number of workers, that dataloader will use. Defaul value is `1`;
-  *`--pretrained_path` --- path to file, where your pretrained model is locadet. It must be `.pth` file, which contains state dictionary of your autoencoder by field `model`. If argument is not specified, the encoder will be trained from the beggining;
-  *`--mode` --- whether to `fine_tune` your model your during classifier training, or use `probing` whithour weights adjustment. This parameter also effector of classifier architecture: for `probing` it is just a single linear layer, wherere as for `fine_tune` it is two linear layers, with dropout and activation between them. Default value is `fine_tune`;
-  *`--freeze` --- whether to freeze encoder parameters during classifier training;
+  * `--type` --- The type of architecture you use;
+  * `--download` --- whether you need to download dataset or not. Default is `False`;
+  * `--nuw_workers` --- scecify the number of workers, that dataloader will use. Defaul value is `1`;
+  * `--pretrained_path` --- path to file, where your pretrained model is locadet. It must be `.pth` file, which contains state dictionary of your autoencoder by field `model`. If argument is not specified, the encoder will be trained from the beggining;
+  * `--mode` --- whether to `fine_tune` your model your during classifier training, or use `probing` whithour weights adjustment. This parameter also effector of classifier architecture: for `probing` it is just a single linear layer, wherere as for `fine_tune` it is two linear layers, with dropout and activation between them. Default value is `fine_tune`;
+  * `--freeze` --- whether to freeze encoder parameters during classifier training. This parameter is usefull, if you want to train more complex classifier without changing weights. Default value is `True`;
+  * `--num_epoches` --- number of epoches for classifier to train;
+  
+Training is spent on dataset CIFAR100.\
