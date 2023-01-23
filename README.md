@@ -42,4 +42,26 @@ There are also several commandline options:
   * `--freeze` --- whether to freeze encoder parameters during classifier training. This parameter is usefull, if you want to train more complex classifier without changing weights. Default value is `True`;
   * `--num_epoches` --- number of epoches for classifier to train;
   
-Training is spent on dataset CIFAR100.\
+Training is spent on dataset CIFAR100.
+
+### Results
+
+For each architecture I trained several classifiers. Each calssifier has been trained for 40 epoches.
+My experiments showed the following results:
+
+|          | No pretrain | Smart classifier + fine tune | Only classifier | Linear + fine tune | Only linear |
+|----------|-------------|------------------------------|-----------------|--------------------|-------------|
+| FC+l1    | .186        | .200                         | .206            | **.245**           | .190        |
+| FC+l2    | .187        | .193                         | .204            | **.235**           | .187        |
+| Conv-192 | .169        | .168                         | .160            | **.198**           | .134        |
+| Conv-256 | .191        | .191                         | .210            | **.214**           | .186        |
+| MAE      |             |                              |                 |                    |             |
+|          |             |                              |                 |                    |             |
+
+### Discussion
+
+Firstly I note, that I gained best classification results in case, where I add simple linear classifier over encoder embeddings. This is true for all architectures I tried.
+
+Secondly, the best classification results showed pretrained fully-connected model with simple linear classifier. It might be kinda confusing, but I find the following explanation: I fixed process of classifier training, same simple setting for all architectures. If we take a look at plot of loss of CNN and MAE models, we may note, that loss continues to decrease. So, the classifier training process is very simple for convolution-based classifier, and absolutely not appropriate for MAE.
+
+I also wanted to try MAE-like approach with convolutional model: mask the large ratio of image and train UNet-like architecture as an autoencoder. Something like this is described in [Pathak et al. 2016](https://arxiv.org/abs/1604.07379). Unfortunately, I didn't have enough time for that, because I wanted to train MAE, and it turned to be very slow process with my resources.
