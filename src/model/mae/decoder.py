@@ -40,7 +40,7 @@ class MAEDecoder(Decoder):
 
         patches = self.head(x)
         mask = torch.zeros_like(patches)
-        mask[hw:] = 1
+        mask[:, hw:] = 1
         mask = mask.gather(1, (unshuffle_ids[:, 1:] - 1).long().unsqueeze(2).repeat(1, 1, mask.shape[-1]))
         img = patches.view(patches.shape[0], self.out_channels, self.img_size, self.img_size)
         mask = mask.view(patches.shape[0], self.out_channels, self.img_size, self.img_size)

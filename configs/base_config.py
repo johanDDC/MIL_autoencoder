@@ -36,6 +36,15 @@ class ModelConfig:
 
 
 @dataclass()
+class ClassifierConfig:
+    num_classes: int
+    num_epoches: int
+    input_dim: int
+    intermediate_dim: int
+
+
+@dataclass()
 class Config:
     train_config: TrainConfig
     model_config: ModelConfig
+    classifier_config: Union[None, ClassifierConfig]

@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-from configs.base_config import OptimizerConfig, TrainConfig, ModelConfig, Config, SchedulerConfig
+from configs.base_config import OptimizerConfig, TrainConfig, ModelConfig, Config, SchedulerConfig, ClassifierConfig
 
 
 class FCTrainConfig(TrainConfig):
@@ -28,5 +28,6 @@ FCConfig = Config(
         scheduler_config=FCExponentialLR("ExponentialLR", "epoch"),
         loss=nn.MSELoss
     ),
-    FCModelConfig()
+    FCModelConfig(),
+    ClassifierConfig(num_classes=100, num_epoches=10, input_dim=3072 // (2 ** 3), intermediate_dim=192)
 )

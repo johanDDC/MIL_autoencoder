@@ -1,7 +1,7 @@
 import math
 import torch
 
-from configs.base_config import OptimizerConfig, TrainConfig, ModelConfig, Config, SchedulerConfig
+from configs.base_config import OptimizerConfig, TrainConfig, ModelConfig, Config, SchedulerConfig, ClassifierConfig
 
 NUM_EPOCHES = 2000
 NUM_WARMUP_EPOCHES = 200
@@ -47,5 +47,6 @@ MAEConfig = Config(
         loss=lambda: lambda predictions_and_mask, targets: torch.mean(
             (predictions_and_mask[0] - targets) ** 2 * predictions_and_mask[1]) / MASK_RATIO
     ),
-    CAEModelConfig()
+    CAEModelConfig(),
+    ClassifierConfig(num_classes=100, num_epoches=10, input_dim=192, intermediate_dim=150)
 )

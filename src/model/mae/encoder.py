@@ -40,8 +40,7 @@ class MAEEncoder(Encoder):
 
     def forward(self, x):
         patches = self.patchify(x)
-        patches = patches.reshape(patches.shape[0], patches.shape[1], -1)
-        patches = patches.permute(0, 2, 1)
+        patches = patches.flatten(2).permute(0, 2, 1)
         patches = self.patch_embeddings(patches)
         patches, unshuffle_ids = self.__shuffle(patches)
         patches = torch.cat([self.cls.expand(patches.shape[0], -1, -1), patches], dim=1)
