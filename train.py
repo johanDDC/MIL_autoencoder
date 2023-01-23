@@ -9,6 +9,7 @@ from tqdm import tqdm
 from src.data.collators import fc_collator
 from pretrain import init
 from src.data.dataset import get_train_dataset, get_val_dataset
+from src.utils.utils import MAEclsExtractor
 
 
 def train_classifier(model, optimizer, criterion, scheduler, train_loader, val_loader, checkpoint_path,
@@ -67,13 +68,14 @@ def train_classifier(model, optimizer, criterion, scheduler, train_loader, val_l
     return val_losses, val_accs
 
 
-def init_classifier(encoder, config, mode="fine_tune", freeze=False):
+def init_classifier(encoder, config, mode="fine_tune", freeze=False, mae=False):
     if mode == "fine_tune":
         if freeze:
             for param in encoder.parameters():
                 param.requires_grad_(False)
         classifier = nn.Sequential(
             encoder,
+            MAEclsExtractor() if mae else nn.Identity(),
             nn.Sequential(nn.Linear(config.classifier_config.input_dim, config.classifier_config.intermediate_dim),
                           nn.ReLU(),
                           nn.Dropout(0.2),
@@ -86,6 +88,7 @@ def init_classifier(encoder, config, mode="fine_tune", freeze=False):
                 param.requires_grad_(False)
         classifier = nn.Sequential(
             encoder,
+            MAEclsExtractor() if mae else nn.Identity(),
             nn.Sequential(nn.Linear(config.classifier_config.input_dim, config.classifier_config.num_classes),
                           nn.LogSoftmax(dim=1))
         )
@@ -133,7 +136,7 @@ if __name__ == '__main__':
     if path is not None:
         model.load_state_dict(torch.load(path)["model"])
 
-    model = init_classifier(model.encoder, cfg, args.mode, args.freeze).to(device)
+    model = init_classifier(model.encoder, cfg, args.mode, args.freeze, args.type=="mae").to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-5 if args.freeze else 3e-3)
     criterion = nn.NLLLoss()
     scheduler = scheduler if not args.freeze else None
@@ -145,5 +148,5 @@ if __name__ == '__main__':
     val_dataloader = DataLoader(val_dataset, cfg.train_config.eval_batch_size, shuffle=False,
                                 num_workers=args.num_workers, collate_fn=collator, pin_memory=True)
 
-    train_classifier(model, optimizer, criterion, scheduler, train_dataloader, val_dataloader, cfg.train_config.checkpoint_path,
-                     device, args.num_epoches)
+    loss, acc = train_classifier(model, optimizer, criterion, scheduler, train_dataloader, val_dataloader, cfg.train_config.checkpoint_path,
+                                 device, args.num_epoches)

@@ -12,10 +12,12 @@ class CAETrainConfig(TrainConfig):
 
 
 class CAEModelConfig(ModelConfig):
-    n_layers = 3
-    scale_factor = 2
+    encoder_n_layers = 4
+    decoder_n_layers = 4
+    encoder_scale_factor = 2
+    decoder_scale_factor = 2
     in_channels = 3
-    start_num_filters = 16
+    start_num_filters = 6
 
     negative_slope = .2
 

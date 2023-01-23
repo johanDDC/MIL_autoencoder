@@ -33,3 +33,11 @@ def set_random_seed(seed):
     torch.cuda.manual_seed(seed)
     np.random.seed(seed)
 
+
+
+class MAEclsExtractor(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, x):
+        return x[0][:, 0, :]
