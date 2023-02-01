@@ -20,7 +20,7 @@ def train_one_epoch(model: Autoencoder, train_dataloader, optimizer, criterion, 
     losses = torch.zeros(len_dataloader, device=device)
     model.train()
     with tqdm(total=len_dataloader) as prbar:
-        for batch_idx, (features, _) in enumerate(train_dataloader):
+        for batch_idx, features in enumerate(train_dataloader):
             features = features.to(device, non_blocking=True)
 
             restored = model(features)
@@ -46,7 +46,7 @@ def evaluate(model: Autoencoder, dataloader, criterion, device="cuda"):
     losses = torch.zeros(len_dataloader, device=device)
     model.eval()
     with tqdm(total=len_dataloader) as prbar:
-        for batch_idx, (features, _) in enumerate(dataloader):
+        for batch_idx, features in enumerate(dataloader):
             features = features.to(device, non_blocking=True)
             restored = model(features)
             loss = criterion(restored, features)
@@ -58,7 +58,7 @@ def evaluate(model: Autoencoder, dataloader, criterion, device="cuda"):
 
 
 def train(model: Autoencoder, optimizer, criterion, scheduler, train_loader,
-          val_loader, checkpoint_path, device="cuda", num_epoches=10, scheduler_frequency=None):
+          val_loader, checkpoint_path, device="cuda", num_epoches=10, scheduler_frequency=None, draw=False):
     train_losses = torch.empty(num_epoches, device=device)
     val_losses = torch.empty(num_epoches, device=device)
     best_loss_value = torch.inf
@@ -137,6 +137,7 @@ if __name__ == '__main__':
     args.add_argument("-t", "--type", default=None, type=str, help="autoencoder architecture type")
     args.add_argument("-d", "--download", default=False, type=bool, help="download dataset")
     args.add_argument("-nw", "--num_workers", default=1, type=int, help="num workers for dataloader")
+    args.add_argument("-draw", "--draw", default=False, type=bool, help="draw plots")
     args = args.parse_args()
 
     model_constructor = None
